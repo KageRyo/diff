@@ -165,3 +165,22 @@ test('collapseRows keeps short gaps between changes', () => {
 test('collapseRows accepts an empty list', () => {
   assert.deepEqual(collapseRows([]), []);
 });
+
+function randomHan(seed, length) {
+  let state = seed;
+  return Array.from({ length }, () => {
+    state = (state * 1103515245 + 12345) % 2147483648;
+    return String.fromCodePoint(0x4e00 + (state % 500));
+  }).join('');
+}
+
+test('caps the total time spent on inline highlights', () => {
+  const oldText = Array.from({ length: 100 }, (_, i) => randomHan(i + 1, 1500)).join('\n');
+  const newText = Array.from({ length: 100 }, (_, i) => randomHan(i + 1001, 1500)).join('\n');
+  const started = performance.now();
+  const result = computeDiff(oldText, newText);
+  const elapsed = performance.now() - started;
+  assert.equal(result.rows.length, 100);
+  assert.ok(result.rows.every((row) => row.type === 'change'));
+  assert.ok(elapsed < 1500, `took ${Math.round(elapsed)} ms`);
+});

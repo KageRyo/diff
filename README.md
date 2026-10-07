@@ -56,7 +56,7 @@ Text is split into user-perceived characters (grapheme clusters), so an emoji se
 3. Read the differences below the editors, and switch between **Split** and **Unified** views.
 4. Adjust the statistics and diff options; your choices are remembered on this device.
 
-The diff compares lines first, then highlights the characters that changed within each modified line. Lines that are too different are highlighted as a whole. If the texts are so different that the comparison takes longer than 2 seconds, Diff shows the whole text as replaced.
+The diff compares lines first, then highlights the characters that changed within each modified line. Lines that are too different are highlighted as a whole, and so are the remaining lines once highlighting a very large change has taken half a second. If the texts are so different that the comparison takes longer than 2 seconds, Diff shows the whole text as replaced.
 
 ## Development
 

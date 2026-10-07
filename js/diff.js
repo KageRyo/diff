@@ -4,6 +4,8 @@ import { splitLines } from './lines.js';
 const INLINE_MAX_LENGTH = 5000;
 const INLINE_MIN_SIMILARITY = 0.5;
 const INLINE_TIMEOUT = 100;
+// Total time for all inline highlights in one diff; later changed lines are highlighted whole.
+const INLINE_BUDGET = 500;
 const WHITESPACE = /\s/gu;
 const WHITESPACE_ONLY = /^\s+$/u;
 
@@ -21,7 +23,11 @@ export function computeDiff(oldText, newText, options = {}) {
   const timedOut = changes === undefined;
   const rows = timedOut
     ? replaceAll(oldLines, newLines)
-    : buildRows(changes, oldLines, newLines, { ignoreWhitespace, ignoreCase });
+    : buildRows(changes, oldLines, newLines, {
+      ignoreWhitespace,
+      ignoreCase,
+      deadline: performance.now() + INLINE_BUDGET,
+    });
 
   let added = 0;
   let removed = 0;
@@ -84,11 +90,13 @@ function changeRow(left, right, inlineOptions) {
   return { type: 'change', left, right };
 }
 
-function inlineSegments(oldLine, newLine, { ignoreWhitespace, ignoreCase }) {
+function inlineSegments(oldLine, newLine, { ignoreWhitespace, ignoreCase, deadline }) {
+  const remaining = deadline - performance.now();
+  if (remaining <= 0) return null;
   const oldChars = Array.from(oldLine);
   const newChars = Array.from(newLine);
   if (oldChars.length > INLINE_MAX_LENGTH || newChars.length > INLINE_MAX_LENGTH) return null;
-  const parts = diffChars(oldLine, newLine, { ignoreCase, timeout: INLINE_TIMEOUT });
+  const parts = diffChars(oldLine, newLine, { ignoreCase, timeout: Math.min(INLINE_TIMEOUT, remaining) });
   if (!parts) return null;
 
   const left = [];

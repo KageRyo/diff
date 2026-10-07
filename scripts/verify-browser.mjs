@@ -121,6 +121,30 @@ try {
     assert.equal(await statNumber(page, 'right', 'lines'), '3,000');
   });
 
+  await check('updates within 3 seconds when long paragraphs are rewritten', async () => {
+    const elapsed = await page.evaluate(async () => {
+      const paragraph = (seed) => {
+        let state = seed;
+        return Array.from({ length: 1500 }, () => {
+          state = (state * 1103515245 + 12345) % 2147483648;
+          return String.fromCodePoint(0x4e00 + (state % 500));
+        }).join('');
+      };
+      const left = document.getElementById('left-input');
+      const right = document.getElementById('right-input');
+      left.value = Array.from({ length: 100 }, (_, i) => paragraph(i + 1)).join('\n');
+      right.value = Array.from({ length: 100 }, (_, i) => paragraph(i + 1001)).join('\n');
+      const started = performance.now();
+      right.dispatchEvent(new Event('input'));
+      await new Promise((resolve) => {
+        const poll = () => (document.querySelector('#diff-summary .is-added')?.textContent === '+100' ? resolve() : setTimeout(poll, 10));
+        poll();
+      });
+      return performance.now() - started;
+    });
+    assert.ok(elapsed < 3000, `update took ${Math.round(elapsed)} ms`);
+  });
+
   await check('fits a phone screen without horizontal scrolling', async () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.fill('#left-input', `https://example.com/${'a'.repeat(300)}`);
