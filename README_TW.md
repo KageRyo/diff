@@ -4,6 +4,7 @@
 
 左右貼上兩段文字，即時以 git 風格標示差異，同時統計字數、字元數、中文字、英文單字、數字、符號與空白。所有處理都在瀏覽器中完成，文字不會上傳或保存。
 
+[![Release](https://img.shields.io/github/v/release/KageRyo/diff)](https://github.com/KageRyo/diff/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tocas UI](https://img.shields.io/badge/Tocas_UI-5.7-1b1c1d)](https://tocas-ui.com/)
 [![jsdiff](https://img.shields.io/badge/jsdiff-9.0-cb3837?logo=npm&logoColor=white)](https://github.com/kpdecker/jsdiff)

@@ -4,6 +4,7 @@
 
 Compare two texts side by side with git-style highlighting, and count words, characters, Chinese characters, English words, digits, symbols, and whitespace as you type. Everything runs in your browser: your text is never uploaded or stored.
 
+[![Release](https://img.shields.io/github/v/release/KageRyo/diff)](https://github.com/KageRyo/diff/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tocas UI](https://img.shields.io/badge/Tocas_UI-5.7-1b1c1d)](https://tocas-ui.com/)
 [![jsdiff](https://img.shields.io/badge/jsdiff-9.0-cb3837?logo=npm&logoColor=white)](https://github.com/kpdecker/jsdiff)
