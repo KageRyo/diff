@@ -1,0 +1,37 @@
+{
+  "name": "kageryo-diff",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Compare two texts with git-style diffs and count words, characters, Chinese characters, letters, digits, symbols, and whitespace in your browser.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "diff",
+    "text-diff",
+    "word-count",
+    "character-count",
+    "chinese",
+    "tocas-ui"
+  ],
+  "author": "Chien-Hsun Chang",
+  "license": "MIT",
+  "homepage": "https://kageryo.github.io/diff/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KageRyo/diff.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KageRyo/diff/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "diff": "9.0.0"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
