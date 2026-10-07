@@ -84,7 +84,9 @@ npm run screenshot       # 重新產生 docs/images/screenshot.png
 | `js/stats.js` | 字元分類與字數計算 |
 | `js/diff.js` | 逐行比對、行內標示與摺疊未變更的行 |
 | `js/render.js` | 統計與 diff 的 DOM 輸出 |
-| `js/i18n.js` | 正體中文與英文字串 |
+| `js/i18n.js` | 語言切換與數字格式 |
+| `js/locales/` | 正體中文與英文字串，每種語言一個檔案 |
+| `js/lines.js`、`js/graphemes.js` | 統計與 diff 共用的切行與字元切分 |
 | `js/app.js` | 事件、設定、主題與語言 |
 | `scripts/` | 本機伺服器、瀏覽器測試與截圖工具 |
 

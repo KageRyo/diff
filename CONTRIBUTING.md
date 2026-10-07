@@ -30,7 +30,7 @@ There is no build step. Keep `js/stats.js` and `js/diff.js` free of DOM access s
 
 1. Fork the repository and create a branch from `main`.
 2. Add or update tests for behavior changes.
-3. When you change interface text, update both `zh-TW` and `en` in `js/i18n.js`.
+3. When you change interface text, update both `js/locales/zh-TW.js` and `js/locales/en.js`.
 4. When you change behavior, update both `README.md` and `README_TW.md`.
 5. Make sure `npm test` and `npm run test:browser` pass.
 6. Open a pull request and describe what changed and why.
@@ -78,7 +78,7 @@ npm run test:browser     # 瀏覽器煙霧測試
 
 1. Fork 本專案，從 `main` 建立分支。
 2. 行為變更請新增或更新測試。
-3. 修改介面文字時，請同時更新 `js/i18n.js` 的 `zh-TW` 與 `en`。
+3. 修改介面文字時，請同時更新 `js/locales/zh-TW.js` 與 `js/locales/en.js`。
 4. 修改行為時，請同時更新 `README.md` 與 `README_TW.md`。
 5. 確認 `npm test` 與 `npm run test:browser` 通過。
 6. 送出 pull request，說明改了什麼以及原因。

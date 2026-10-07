@@ -84,7 +84,9 @@ npm run screenshot       # regenerate docs/images/screenshot.png
 | `js/stats.js` | Character classification and word counting |
 | `js/diff.js` | Line diff, inline highlights, and context collapsing |
 | `js/render.js` | DOM rendering for statistics and diffs |
-| `js/i18n.js` | Traditional Chinese and English strings |
+| `js/i18n.js` | Language switching and number formatting |
+| `js/locales/` | Traditional Chinese and English strings, one file per language |
+| `js/lines.js`, `js/graphemes.js` | Line and grapheme splitting shared by statistics and diff |
 | `js/app.js` | Events, settings, theme, and language |
 | `scripts/` | Local server, browser test, and screenshot tools |
 
