@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Diff · 文字比對與字數統計</title>
+  <meta name="description" content="Compare two texts with git-style diffs and count words, characters, Chinese characters, letters, digits, symbols, and whitespace. Everything runs in your browser.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/5.7.0/tocas.min.css" integrity="sha512-F4xj0Qcc6/jwQjpN70mZP1F5edUVg/WbWEYqUu1FEnvZFAg5IxvBAlNgji+6547uhPtaO14HmBdMhsZ19fHVSw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <div class="ts-container is-padded app">
+    <header class="app-header">
+      <div>
+        <h1 class="ts-header is-large is-heavy">Diff</h1>
+        <div class="ts-text is-secondary" data-i18n="app.tagline">文字比對與字數統計</div>
+      </div>
+      <div class="ts-wrap is-compact is-middle-aligned">
+        <button class="ts-button is-ghost is-icon" id="theme-toggle" type="button" aria-label="切換主題">
+          <span class="ts-icon is-circle-half-stroke-icon" aria-hidden="true"></span>
+        </button>
+        <a class="ts-button is-ghost is-icon" href="https://github.com/KageRyo/diff" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
+          <span class="ts-icon is-github-icon" aria-hidden="true"></span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <div class="editors">
+        <section class="ts-box panel" aria-labelledby="left-title">
+          <div class="ts-content is-dense panel-header">
+            <h2 class="ts-text is-bold" id="left-title" data-i18n="panel.original">原始文字</h2>
+            <button class="ts-button is-small is-ghost is-start-icon" type="button" data-clear="left">
+              <span class="ts-icon is-eraser-icon" aria-hidden="true"></span><span data-i18n="action.clear">清除</span>
+            </button>
+          </div>
+          <div class="ts-divider"></div>
+          <div class="ts-content is-dense">
+            <div class="ts-input is-basic is-resizable is-fluid">
+              <textarea id="left-input" rows="10" spellcheck="false" autocomplete="off" aria-labelledby="left-title" data-i18n-placeholder="panel.originalPlaceholder" placeholder="在這裡貼上原始文字…"></textarea>
+            </div>
+          </div>
+          <div class="ts-divider"></div>
+          <div class="ts-content is-dense stats" id="left-stats">
+            <div class="stats-grid" data-stats="primary"></div>
+            <details class="ts-accordion stats-details">
+              <summary data-i18n="stats.more">詳細統計</summary>
+              <div class="stats-grid" data-stats="secondary"></div>
+            </details>
+          </div>
+        </section>
+
+        <section class="ts-box panel" aria-labelledby="right-title">
+          <div class="ts-content is-dense panel-header">
+            <h2 class="ts-text is-bold" id="right-title" data-i18n="panel.modified">修改後文字</h2>
+            <button class="ts-button is-small is-ghost is-start-icon" type="button" data-clear="right">
+              <span class="ts-icon is-eraser-icon" aria-hidden="true"></span><span data-i18n="action.clear">清除</span>
+            </button>
+          </div>
+          <div class="ts-divider"></div>
+          <div class="ts-content is-dense">
+            <div class="ts-input is-basic is-resizable is-fluid">
+              <textarea id="right-input" rows="10" spellcheck="false" autocomplete="off" aria-labelledby="right-title" data-i18n-placeholder="panel.modifiedPlaceholder" placeholder="在這裡貼上修改後的文字…"></textarea>
+            </div>
+          </div>
+          <div class="ts-divider"></div>
+          <div class="ts-content is-dense stats" id="right-stats">
+            <div class="stats-grid" data-stats="primary"></div>
+            <details class="ts-accordion stats-details">
+              <summary data-i18n="stats.more">詳細統計</summary>
+              <div class="stats-grid" data-stats="secondary"></div>
+            </details>
+          </div>
+        </section>
+      </div>
+
+      <section class="ts-box options">
+        <div class="ts-content is-dense options-row">
+          <span class="ts-text is-bold" data-i18n="options.stats">統計選項</span>
+          <label class="ts-checkbox"><input type="checkbox" data-setting="includeHalfSpace"><span data-i18n="options.includeHalfSpace">字元數含半形空白</span></label>
+          <label class="ts-checkbox"><input type="checkbox" data-setting="includeFullSpace"><span data-i18n="options.includeFullSpace">字元數含全形空白</span></label>
+          <label class="ts-checkbox"><input type="checkbox" data-setting="includeNewline"><span data-i18n="options.includeNewline">字元數含換行</span></label>
+          <label class="ts-checkbox"><input type="checkbox" data-setting="wordsIncludePunct"><span data-i18n="options.wordsIncludePunct">字數含標點符號</span></label>
+          <div class="ts-wrap is-compact options-actions">
+            <button class="ts-button is-small is-outlined is-start-icon" id="swap" type="button">
+              <span class="ts-icon is-right-left-icon" aria-hidden="true"></span><span data-i18n="action.swap">交換左右</span>
+            </button>
+            <button class="ts-button is-small is-outlined is-negative is-start-icon" id="clear-all" type="button">
+              <span class="ts-icon is-trash-can-icon" aria-hidden="true"></span><span data-i18n="action.clearAll">全部清除</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p data-i18n="footer.privacy">所有處理都在你的瀏覽器中完成，文字不會上傳或保存。</p>
+      <p><a href="https://github.com/KageRyo/diff" target="_blank" rel="noopener noreferrer">KageRyo/diff</a> · MIT License</p>
+    </footer>
+  </div>
+</body>
+</html>

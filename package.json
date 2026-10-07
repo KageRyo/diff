@@ -5,6 +5,7 @@
   "description": "Compare two texts with git-style diffs and count words, characters, Chinese characters, letters, digits, symbols, and whitespace in your browser.",
   "type": "module",
   "scripts": {
+    "start": "node scripts/serve.mjs",
     "test": "node --test"
   },
   "keywords": [
