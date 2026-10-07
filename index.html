@@ -9,8 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+  <!-- Tocas UI from cdnjs, pinned with Subresource Integrity -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/5.7.0/tocas.min.css" integrity="sha512-F4xj0Qcc6/jwQjpN70mZP1F5edUVg/WbWEYqUu1FEnvZFAg5IxvBAlNgji+6547uhPtaO14HmBdMhsZ19fHVSw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="css/style.css">
+  <!-- jsdiff is served from node_modules (npm install locally, copied into the site by CI) -->
   <script type="importmap">
     {
       "imports": {
@@ -22,6 +24,7 @@
 </head>
 <body>
   <div class="ts-container is-padded app">
+    <!-- Header: title, language and theme toggles, GitHub link -->
     <header class="app-header">
       <div>
         <h1 class="ts-header is-large is-heavy">Diff</h1>
@@ -41,6 +44,7 @@
     </header>
 
     <main>
+      <!-- Editors: original and modified text, each with its statistics -->
       <div class="editors">
         <section class="ts-box panel" aria-labelledby="left-title">
           <div class="ts-content is-dense panel-header">
@@ -56,6 +60,7 @@
             </div>
           </div>
           <div class="ts-divider"></div>
+          <!-- Filled by renderStats() in js/render.js; data-i18n text is translated by js/i18n.js -->
           <div class="ts-content is-dense stats" id="left-stats">
             <div class="stats-grid" data-stats="primary"></div>
             <details class="ts-accordion stats-details">
@@ -89,6 +94,7 @@
         </section>
       </div>
 
+      <!-- Statistics options and actions; each data-setting checkbox maps to a key in js/app.js -->
       <section class="ts-box options">
         <div class="ts-content is-dense options-row">
           <span class="ts-text is-bold" data-i18n="options.stats">統計選項</span>
@@ -107,6 +113,7 @@
         </div>
       </section>
 
+      <!-- Diff: view and comparison options, summary, and the table rendered by js/render.js -->
       <section class="ts-box diff-box">
         <div class="ts-content is-dense diff-toolbar">
           <div class="ts-buttons" role="group" data-i18n-aria-label="diff.view" aria-label="檢視方式">
@@ -123,6 +130,7 @@
       </section>
     </main>
 
+    <!-- Footer -->
     <footer class="app-footer">
       <p><a href="https://github.com/KageRyo/diff" target="_blank" rel="noopener noreferrer">KageRyo/diff</a> · MIT License</p>
     </footer>

@@ -1,15 +1,60 @@
+/**
+ * @file Line-by-line diff with inline highlights, built on jsdiff. Pure functions without DOM
+ * access, so the same code runs in the browser and in `node:test`.
+ */
+
 import { diffArrays } from 'diff';
 import { splitGraphemes } from './graphemes.js';
 import { splitLines } from './lines.js';
 
+// Inline highlights are skipped for lines longer than this many graphemes,
 const INLINE_MAX_LENGTH = 5000;
+// and for pairs of lines that share less than half of their graphemes.
 const INLINE_MIN_SIMILARITY = 0.5;
+// Time limit in milliseconds for highlighting one line.
 const INLINE_TIMEOUT = 100;
 // Total time for all inline highlights in one diff; later changed lines are highlighted whole.
 const INLINE_BUDGET = 500;
 const WHITESPACE = /\s/gu;
 const WHITESPACE_ONLY = /^\s+$/u;
 
+/**
+ * @typedef {object} Segment
+ * @property {string} text
+ * @property {boolean} changed Whether this part of the line was added or removed.
+ */
+
+/**
+ * @typedef {object} Line
+ * @property {number} no 1-based line number on its own side.
+ * @property {string} text The original text of the line.
+ * @property {Segment[] | null} segments Inline highlights, or null to highlight the whole line.
+ */
+
+/**
+ * @typedef {object} Row
+ * @property {'equal' | 'delete' | 'insert' | 'change'} type
+ * @property {Line | null} left
+ * @property {Line | null} right
+ */
+
+/**
+ * @typedef {object} DiffResult
+ * @property {Row[]} rows
+ * @property {number} added Lines added; a changed line counts once here and once in `removed`.
+ * @property {number} removed Lines removed.
+ * @property {boolean} identical Whether the texts match under the current options.
+ * @property {boolean} timedOut Whether the line comparison gave up and shows a full replacement.
+ */
+
+/**
+ * Compares two texts line by line, then highlights the changed graphemes inside each modified line.
+ * @param {string} oldText
+ * @param {string} newText
+ * @param {{ ignoreWhitespace?: boolean, ignoreCase?: boolean, timeout?: number }} [options]
+ *   `timeout` limits the line comparison in milliseconds. Unknown keys are ignored.
+ * @returns {DiffResult}
+ */
 export function computeDiff(oldText, newText, options = {}) {
   const { ignoreWhitespace = false, ignoreCase = false, timeout = 2000 } = options;
   const oldLines = splitLines(oldText);
@@ -42,6 +87,7 @@ export function computeDiff(oldText, newText, options = {}) {
 
 const lineAt = (lines, index) => ({ no: index + 1, text: lines[index], segments: null });
 
+/** Shows the whole old text as deleted and the whole new text as inserted. */
 function replaceAll(oldLines, newLines) {
   return [
     ...oldLines.map((_, index) => ({ type: 'delete', left: lineAt(oldLines, index), right: null })),
@@ -49,6 +95,7 @@ function replaceAll(oldLines, newLines) {
   ];
 }
 
+/** Turns jsdiff's change list into display rows, pairing deleted and inserted lines into changes. */
 function buildRows(changes, oldLines, newLines, inlineOptions) {
   const rows = [];
   let oldIndex = 0;
@@ -91,6 +138,10 @@ function changeRow(left, right, inlineOptions) {
   return { type: 'change', left, right };
 }
 
+/**
+ * Splits a changed pair of lines into unchanged and changed segments for each side.
+ * Returns null when the lines are too long, too different, or the time budget has run out.
+ */
 function inlineSegments(oldLine, newLine, { ignoreWhitespace, ignoreCase, deadline }) {
   const remaining = deadline - performance.now();
   if (remaining <= 0) return null;
@@ -128,13 +179,19 @@ function inlineSegments(oldLine, newLine, { ignoreWhitespace, ignoreCase, deadli
   return similarity < INLINE_MIN_SIMILARITY ? null : { left, right };
 }
 
+/** Appends text to the segment list, merging it into the previous segment when both share a state. */
 function pushSegment(segments, text, changed) {
   const last = segments.at(-1);
   if (last && last.changed === changed) last.text += text;
   else segments.push({ text, changed });
 }
 
-/** Replaces runs of unchanged rows farther than `context` rows from any change with skip rows. */
+/**
+ * Replaces runs of unchanged rows farther than `context` rows from any change with skip rows.
+ * @param {Row[]} rows
+ * @param {number} [context=3]
+ * @returns {Array<Row | { type: 'skip', count: number }>}
+ */
 export function collapseRows(rows, context = 3) {
   const visible = new Array(rows.length).fill(false);
   rows.forEach((row, index) => {

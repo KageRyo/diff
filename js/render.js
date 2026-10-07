@@ -1,12 +1,20 @@
+/**
+ * @file Builds the statistics panels and the diff table. User text is only ever inserted with
+ * `textContent` or text nodes, never as HTML.
+ */
+
 import { formatNumber, t } from './i18n.js';
 
+// The statistics shown in each panel; the secondary ones sit under "More statistics".
 export const STAT_GROUPS = {
   primary: ['words', 'characters', 'han', 'englishWords', 'latin', 'digits'],
   secondary: ['punctFull', 'punctHalf', 'spaceHalf', 'spaceFull', 'newlines', 'emoji', 'other', 'lines', 'paragraphs'],
 };
 
+/** Joins the truthy class names with spaces. */
 export const cls = (...names) => names.filter(Boolean).join(' ');
 
+/** Creates an element with an optional class name and text content. */
 export function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -23,6 +31,7 @@ export function renderStats(container, stats, baseline = null) {
   }
 }
 
+/** Builds one statistic: the number, its difference from the other side when it differs, and the label. */
 function statItem(key, value, baseValue) {
   const item = el('div', 'stat');
   item.dataset.stat = key;
@@ -37,6 +46,7 @@ function statItem(key, value, baseValue) {
   return item;
 }
 
+/** Shows the placeholder used while both inputs are empty. */
 export function renderEmpty(container) {
   const slate = el('div', 'ts-blankslate is-secondary diff-empty');
   slate.append(
@@ -47,6 +57,7 @@ export function renderEmpty(container) {
   container.replaceChildren(slate);
 }
 
+/** Shows the added and removed line counts, or that the texts are identical. */
 export function renderSummary(container, result) {
   if (result.identical) {
     container.replaceChildren(el('span', 'is-identical', t('diff.identical')));
@@ -61,6 +72,12 @@ export function renderSummary(container, result) {
   container.replaceChildren(...parts);
 }
 
+/**
+ * Renders diff rows as a table.
+ * @param {HTMLElement} container
+ * @param {Array<object>} rows Rows from computeDiff, optionally collapsed with collapseRows.
+ * @param {'split' | 'unified'} view Side by side, or one column like `git diff`.
+ */
 export function renderDiff(container, rows, view) {
   const columns = view === 'split'
     ? ['is-number', 'is-text', 'is-number', 'is-text']
@@ -74,6 +91,7 @@ export function renderDiff(container, rows, view) {
   container.replaceChildren(table);
 }
 
+/** One side-by-side row: line number and text for the old side, then for the new side. */
 function splitRow(row) {
   if (row.type === 'skip') return skipRow(row.count);
   const changed = row.type !== 'equal';
@@ -85,11 +103,13 @@ function splitRow(row) {
   return tr;
 }
 
+/** The number and text cells for one side; a side without a line gets empty, shaded cells. */
 function lineCells(line, state, side) {
   if (!line) return [el('td', cls('diff-number', 'is-empty', side)), el('td', 'diff-text is-empty')];
   return [el('td', cls('diff-number', state, side), String(line.no)), textCell(line, state)];
 }
 
+/** A text cell, with changed segments wrapped in <mark> when the line has inline highlights. */
 function textCell(line, state) {
   const cell = el('td', cls('diff-text', state));
   if (line.segments) {
@@ -100,6 +120,7 @@ function textCell(line, state) {
   return cell;
 }
 
+/** A full-width row standing in for unchanged lines hidden by collapseRows. */
 function skipRow(count) {
   const cell = el('td', 'diff-skip', t('diff.skipped', { count: formatNumber(count) }));
   cell.colSpan = 4;
@@ -134,6 +155,7 @@ function unifiedRows(rows) {
   return result;
 }
 
+/** One unified row: old and new line numbers, a -, +, or blank marker, and the text. */
 function unifiedRow(oldNo, newNo, marker, line, state) {
   const tr = el('tr');
   tr.append(

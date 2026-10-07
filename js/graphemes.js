@@ -1,6 +1,11 @@
 const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
 
-/** Splits text into user-perceived characters (grapheme clusters). */
+/**
+ * Splits text into user-perceived characters (grapheme clusters), so an emoji sequence
+ * or a letter with combining accents stays in one piece.
+ * @param {string} text
+ * @returns {string[]}
+ */
 export function splitGraphemes(text) {
   return Array.from(segmenter.segment(text), (part) => part.segment);
 }

@@ -1,3 +1,8 @@
+/**
+ * @file Character classification and word counting. Pure functions without DOM access,
+ * so the same code runs in the browser and in `node:test`.
+ */
+
 import { splitGraphemes } from './graphemes.js';
 import { splitLines } from './lines.js';
 
@@ -16,11 +21,21 @@ const JOINERS = new Set(["'", '\u2019', '-', '_']);
 // Number joiners only connect digits: 3.14, 1,000.
 const NUMBER_JOINERS = new Set(['.', ',']);
 
+/** The categories every grapheme is sorted into; each grapheme belongs to exactly one. */
 export const CATEGORIES = [
   'han', 'latin', 'digits', 'punctHalf', 'punctFull',
   'spaceHalf', 'spaceFull', 'newlines', 'emoji', 'other',
 ];
 
+/**
+ * @typedef {object} StatsOptions
+ * @property {boolean} [includeHalfSpace=true] Count half-width spaces and tabs as characters.
+ * @property {boolean} [includeFullSpace=true] Count full-width spaces (U+3000) as characters.
+ * @property {boolean} [includeNewline=false] Count line breaks as characters.
+ * @property {boolean} [wordsIncludePunct=false] Count each punctuation mark as a word.
+ */
+
+/** @type {Readonly<Required<StatsOptions>>} */
 export const DEFAULT_STATS_OPTIONS = Object.freeze({
   includeHalfSpace: true,
   includeFullSpace: true,
@@ -28,7 +43,13 @@ export const DEFAULT_STATS_OPTIONS = Object.freeze({
   wordsIncludePunct: false,
 });
 
-/** Returns the single category a grapheme cluster belongs to. */
+/**
+ * Returns the single category a grapheme cluster belongs to. The order of the checks matters:
+ * a keycap emoji (a digit followed by U+FE0F and U+20E3) is emoji rather than a digit, and
+ * U+3000 is caught as a full-width space before the general `\s` check.
+ * @param {string} grapheme
+ * @returns {string} One of CATEGORIES.
+ */
 export function classify(grapheme) {
   if (NEWLINE.test(grapheme)) return 'newlines';
   if (grapheme === '\u3000') return 'spaceFull';
@@ -41,11 +62,14 @@ export function classify(grapheme) {
   return 'other';
 }
 
+// Chinese characters and kana count as one word each, like in word processors.
 const isPerCharWord = (grapheme, kind) => kind === 'han' || (kind === 'other' && KANA.test(grapheme));
 
+// Other letters, digits, and marks build runs that count as one word together.
 const isTokenChar = (grapheme, kind) =>
   kind !== 'emoji' && !isPerCharWord(grapheme, kind) && WORD_CHAR.test(grapheme);
 
+/** Whether the joiner at `index` continues the current run of letters or digits instead of ending it. */
 function joinsToken(graphemes, kinds, index) {
   const next = index + 1;
   if (next >= graphemes.length) return false;
@@ -54,6 +78,31 @@ function joinsToken(graphemes, kinds, index) {
   return false;
 }
 
+/**
+ * @typedef {object} Stats
+ * @property {number} characters Graphemes, minus the whitespace categories the options exclude.
+ * @property {number} words Chinese characters and kana count one each; each run of letters or digits counts one.
+ * @property {number} englishWords Runs of letters or digits that contain a Latin letter.
+ * @property {number} han
+ * @property {number} latin
+ * @property {number} digits
+ * @property {number} punctHalf ASCII punctuation and symbols.
+ * @property {number} punctFull All other punctuation and symbols.
+ * @property {number} spaceHalf Spaces, tabs, and other whitespace except U+3000.
+ * @property {number} spaceFull
+ * @property {number} newlines
+ * @property {number} emoji
+ * @property {number} other
+ * @property {number} lines
+ * @property {number} paragraphs Lines that contain anything other than whitespace.
+ */
+
+/**
+ * Counts the characters and words in `text`.
+ * @param {string} text
+ * @param {StatsOptions} [options] Unknown keys are ignored, so the app can pass its whole settings object.
+ * @returns {Stats}
+ */
 export function countText(text, options = {}) {
   const opts = { ...DEFAULT_STATS_OPTIONS, ...options };
   const graphemes = splitGraphemes(text);
@@ -104,7 +153,10 @@ export function countText(text, options = {}) {
   };
 }
 
-/** Returns countText with a one-entry cache, so an unchanged side is not counted again. */
+/**
+ * Returns countText with a one-entry cache, so an unchanged side is not counted again.
+ * @returns {(text: string, options?: StatsOptions) => Stats}
+ */
 export function createCounter() {
   let last = null;
   return (text, options = {}) => {
