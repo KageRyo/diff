@@ -1,7 +1,7 @@
 import { countText } from './stats.js';
 import { collapseRows, computeDiff } from './diff.js';
 import { renderDiff, renderEmpty, renderStats, renderSummary } from './render.js';
-import { applyI18n, setLang, t } from './i18n.js';
+import { applyI18n, LANGUAGES, setLang, t } from './i18n.js';
 
 const STORAGE_KEY = 'diff:settings';
 const THEMES = ['auto', 'light', 'dark'];
@@ -16,8 +16,9 @@ const DEFAULT_SETTINGS = {
   ignoreCase: false,
   collapse: false,
   theme: 'auto',
+  lang: detectLanguage(),
 };
-const CHOICES = { theme: THEMES, view: ['split', 'unified'] };
+const CHOICES = { theme: THEMES, view: ['split', 'unified'], lang: LANGUAGES };
 
 const settings = { ...DEFAULT_SETTINGS, ...loadSettings() };
 const inputs = { left: document.getElementById('left-input'), right: document.getElementById('right-input') };
@@ -26,6 +27,10 @@ const themeButton = document.getElementById('theme-toggle');
 const diffSummary = document.getElementById('diff-summary');
 const diffOutput = document.getElementById('diff-output');
 const viewButtons = document.querySelectorAll('[data-view]');
+
+function detectLanguage() {
+  return (navigator.language ?? '').toLowerCase().startsWith('zh') ? 'zh-TW' : 'en';
+}
 
 /** Reads saved settings, keeping only known keys whose values have the expected type. */
 function loadSettings() {
@@ -93,6 +98,19 @@ function applyView() {
   }
 }
 
+function applyLanguage() {
+  setLang(settings.lang);
+  applyI18n();
+  applyTheme();
+  update();
+}
+
+document.getElementById('lang-toggle').addEventListener('click', () => {
+  settings.lang = settings.lang === 'zh-TW' ? 'en' : 'zh-TW';
+  saveSettings();
+  applyLanguage();
+});
+
 for (const button of viewButtons) {
   button.addEventListener('click', () => {
     settings.view = button.dataset.view;
@@ -141,8 +159,5 @@ themeButton.addEventListener('click', () => {
   applyTheme();
 });
 
-setLang('zh-TW');
-applyI18n();
-applyTheme();
 applyView();
-update();
+applyLanguage();
