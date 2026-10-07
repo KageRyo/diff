@@ -1,4 +1,5 @@
-import { diffArrays, diffChars } from 'diff';
+import { diffArrays } from 'diff';
+import { splitGraphemes } from './graphemes.js';
 import { splitLines } from './lines.js';
 
 const INLINE_MAX_LENGTH = 5000;
@@ -93,10 +94,12 @@ function changeRow(left, right, inlineOptions) {
 function inlineSegments(oldLine, newLine, { ignoreWhitespace, ignoreCase, deadline }) {
   const remaining = deadline - performance.now();
   if (remaining <= 0) return null;
-  const oldChars = Array.from(oldLine);
-  const newChars = Array.from(newLine);
+  const oldChars = splitGraphemes(oldLine);
+  const newChars = splitGraphemes(newLine);
   if (oldChars.length > INLINE_MAX_LENGTH || newChars.length > INLINE_MAX_LENGTH) return null;
-  const parts = diffChars(oldLine, newLine, { ignoreCase, timeout: Math.min(INLINE_TIMEOUT, remaining) });
+  // Compare grapheme clusters so a highlight never splits an accented letter, flag, or emoji sequence.
+  const comparator = ignoreCase ? (a, b) => a === b || a.toLowerCase() === b.toLowerCase() : undefined;
+  const parts = diffArrays(oldChars, newChars, { comparator, timeout: Math.min(INLINE_TIMEOUT, remaining) });
   if (!parts) return null;
 
   const left = [];
@@ -106,7 +109,7 @@ function inlineSegments(oldLine, newLine, { ignoreWhitespace, ignoreCase, deadli
   let common = 0;
   const isChange = (text) => !(ignoreWhitespace && WHITESPACE_ONLY.test(text));
 
-  // `count` is in code points; slice the originals so ignoreCase keeps each side's own text.
+  // `count` is in graphemes; slice the originals so ignoreCase keeps each side's own text.
   for (const part of parts) {
     if (part.removed) {
       const text = oldChars.slice(oldIndex, (oldIndex += part.count)).join('');

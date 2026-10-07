@@ -184,3 +184,18 @@ test('caps the total time spent on inline highlights', () => {
   assert.ok(result.rows.every((row) => row.type === 'change'));
   assert.ok(elapsed < 1500, `took ${Math.round(elapsed)} ms`);
 });
+
+test('inline highlights cover whole grapheme clusters', () => {
+  const changedTexts = (segments) => segments.filter((s) => s.changed).map((s) => s.text);
+  const cases = [
+    ['cafe\u0301 au lait', 'cafe au lait', ['e\u0301'], ['e']],
+    ['國旗 🇹🇼 飄揚', '國旗 🇹🇭 飄揚', ['🇹🇼'], ['🇹🇭']],
+    ['讚 👍🏻 喔', '讚 👍🏿 喔', ['👍🏻'], ['👍🏿']],
+    ['家人 👨‍👩‍👧 都在', '家人 👨‍👩‍👦 都在', ['👨‍👩‍👧'], ['👨‍👩‍👦']],
+  ];
+  for (const [oldLine, newLine, removed, added] of cases) {
+    const [row] = computeDiff(oldLine, newLine).rows;
+    assert.deepEqual(changedTexts(row.left.segments), removed, oldLine);
+    assert.deepEqual(changedTexts(row.right.segments), added, newLine);
+  }
+});

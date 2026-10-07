@@ -1,6 +1,5 @@
+import { splitGraphemes } from './graphemes.js';
 import { splitLines } from './lines.js';
-
-const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
 
 const NEWLINE = /^(?:\r\n|[\n\r\u0085\u2028\u2029])$/u;
 const SPACE = /^\s/u;
@@ -57,7 +56,7 @@ function joinsToken(graphemes, kinds, index) {
 
 export function countText(text, options = {}) {
   const opts = { ...DEFAULT_STATS_OPTIONS, ...options };
-  const graphemes = Array.from(segmenter.segment(text), (part) => part.segment);
+  const graphemes = splitGraphemes(text);
   const kinds = graphemes.map(classify);
   const categories = Object.fromEntries(CATEGORIES.map((key) => [key, 0]));
   let words = 0;
