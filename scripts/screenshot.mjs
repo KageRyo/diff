@@ -24,6 +24,7 @@ try {
   await page.fill('#left-input', original);
   await page.fill('#right-input', modified);
   await page.waitForSelector('.diff-table');
+  await page.evaluate(() => document.activeElement?.blur());
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: output, fullPage: true });
   console.log(`Saved ${output}`);

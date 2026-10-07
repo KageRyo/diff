@@ -48,7 +48,6 @@ export const messages = {
     'diff.emptyDescription': '在上方貼上兩段文字，這裡會即時顯示差異。',
     'lang.other': 'English',
     'lang.toggle': '切換語言',
-    'footer.privacy': '所有處理都在你的瀏覽器中完成，文字不會上傳或保存。',
   },
   en: {
     'app.title': 'Diff · Text Compare & Word Count',
@@ -99,7 +98,6 @@ export const messages = {
     'diff.emptyDescription': 'Paste two texts above to see their differences instantly.',
     'lang.other': '中文',
     'lang.toggle': 'Switch language',
-    'footer.privacy': 'Everything runs in your browser. Your text is never uploaded or stored.',
   },
 };
 
