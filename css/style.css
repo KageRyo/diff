@@ -15,6 +15,18 @@
   padding-block: 1.5rem 2rem;
 }
 
+/* Tocas removes the default outline from controls; restore a keyboard focus ring. */
+:is(.ts-button, .ts-checkbox input, summary):focus-visible {
+  outline: 2px solid var(--ts-primary-500);
+  outline-offset: 2px;
+}
+
+.panel textarea:focus-visible {
+  outline: 2px solid var(--ts-primary-500);
+  outline-offset: 4px;
+  border-radius: var(--ts-border-radius-element);
+}
+
 .app-header {
   display: flex;
   flex-wrap: wrap;

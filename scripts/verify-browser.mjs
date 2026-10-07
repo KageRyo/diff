@@ -34,6 +34,22 @@ try {
     assert.equal(await page.textContent('#left-title'), '原始文字');
   });
 
+  await check('shows where keyboard focus is', async () => {
+    const focused = [];
+    for (let i = 0; i < 30 && focused.length < 12; i += 1) {
+      await page.keyboard.press('Tab');
+      focused.push(await page.evaluate(() => {
+        const node = document.activeElement;
+        return { name: node.id || node.dataset.setting || node.dataset.clear || node.tagName, outline: getComputedStyle(node).outlineStyle };
+      }));
+    }
+    const names = focused.map((item) => item.name);
+    assert.ok(names.includes('lang-toggle') && names.includes('includeHalfSpace'), names.join(','));
+    for (const item of focused) {
+      assert.notEqual(item.outline, 'none', `${item.name} has no focus outline`);
+    }
+  });
+
   await check('updates statistics and the diff while typing', async () => {
     await page.fill('#left-input', '我愛台灣\nHello world\n相同的一行');
     await page.fill('#right-input', '我很愛臺灣\nHello world\n相同的一行\n新增 123');
