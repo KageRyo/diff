@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CATEGORIES, countText } from '../js/stats.js';
+import { CATEGORIES, countText, createCounter } from '../js/stats.js';
 import { splitLines } from '../js/lines.js';
 
 test('splitLines handles every line break and empty text', () => {
@@ -139,4 +139,13 @@ test('categories add up to the total number of characters', () => {
   const stats = countText(text, { includeNewline: true });
   const sum = CATEGORIES.reduce((total, key) => total + stats[key], 0);
   assert.equal(sum, stats.characters);
+});
+
+test('a counter reuses the result while the text and options stay the same', () => {
+  const count = createCounter();
+  const first = count('同一段文字', { includeNewline: false, theme: 'dark' });
+  assert.equal(count('同一段文字', { includeNewline: false, theme: 'light' }), first);
+  assert.notEqual(count('同一段文字', { includeNewline: true }), first);
+  assert.notEqual(count('另一段文字'), first);
+  assert.deepEqual(count('同一段文字'), countText('同一段文字'));
 });

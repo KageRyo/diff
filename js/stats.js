@@ -103,3 +103,14 @@ export function countText(text, options = {}) {
     paragraphs: lines.filter((line) => /\S/u.test(line)).length,
   };
 }
+
+/** Returns countText with a one-entry cache, so an unchanged side is not counted again. */
+export function createCounter() {
+  let last = null;
+  return (text, options = {}) => {
+    const opts = Object.fromEntries(Object.keys(DEFAULT_STATS_OPTIONS).map((key) => [key, options[key] ?? DEFAULT_STATS_OPTIONS[key]]));
+    const unchanged = last?.text === text && Object.keys(opts).every((key) => last.opts[key] === opts[key]);
+    if (!unchanged) last = { text, opts, stats: countText(text, opts) };
+    return last.stats;
+  };
+}

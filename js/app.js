@@ -1,4 +1,4 @@
-import { countText } from './stats.js';
+import { createCounter } from './stats.js';
 import { collapseRows, computeDiff } from './diff.js';
 import { renderDiff, renderEmpty, renderStats, renderSummary } from './render.js';
 import { applyI18n, LANGUAGES, setLang, t } from './i18n.js';
@@ -22,6 +22,7 @@ const CHOICES = { theme: THEMES, view: ['split', 'unified'], lang: LANGUAGES };
 
 const settings = { ...DEFAULT_SETTINGS, ...loadSettings() };
 const inputs = { left: document.getElementById('left-input'), right: document.getElementById('right-input') };
+const counters = { left: createCounter(), right: createCounter() };
 const statsPanels = { left: document.getElementById('left-stats'), right: document.getElementById('right-stats') };
 const themeButton = document.getElementById('theme-toggle');
 const diffSummary = document.getElementById('diff-summary');
@@ -61,9 +62,9 @@ function saveSettings() {
 function update() {
   const left = inputs.left.value;
   const right = inputs.right.value;
-  const leftStats = countText(left, settings);
+  const leftStats = counters.left(left, settings);
   renderStats(statsPanels.left, leftStats);
-  renderStats(statsPanels.right, countText(right, settings), leftStats);
+  renderStats(statsPanels.right, counters.right(right, settings), leftStats);
 
   if (left === '' && right === '') {
     diffSummary.replaceChildren();
