@@ -2,6 +2,13 @@
   --app-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", "Noto Sans Mono CJK TC", monospace;
   --app-positive: light-dark(#1a7f37, #3fb950);
   --app-negative: light-dark(#cf222e, #f85149);
+  --diff-delete-bg: light-dark(#ffebe9, rgba(248, 81, 73, 0.12));
+  --diff-delete-number-bg: light-dark(#ffd7d5, rgba(248, 81, 73, 0.22));
+  --diff-delete-mark-bg: light-dark(#ff818266, rgba(248, 81, 73, 0.4));
+  --diff-insert-bg: light-dark(#e6ffec, rgba(46, 160, 67, 0.12));
+  --diff-insert-number-bg: light-dark(#ccffd8, rgba(46, 160, 67, 0.22));
+  --diff-insert-mark-bg: light-dark(#abf2bc, rgba(46, 160, 67, 0.4));
+  --diff-muted-bg: light-dark(#f6f8fa, rgba(110, 118, 129, 0.1));
 }
 
 .app {
@@ -121,6 +128,132 @@
   margin-inline-start: auto;
 }
 
+.diff-box {
+  margin-top: 1rem;
+}
+
+.diff-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+
+.diff-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-inline-start: auto;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.diff-summary .is-added {
+  color: var(--app-positive);
+  font-weight: 500;
+}
+
+.diff-summary .is-removed {
+  color: var(--app-negative);
+  font-weight: 500;
+}
+
+.diff-summary .is-warning {
+  color: var(--ts-gray-600);
+}
+
+.diff-output {
+  overflow: hidden;
+}
+
+.diff-empty {
+  padding: 2rem 1rem;
+}
+
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: var(--app-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.diff-table col.is-number {
+  width: 3.75rem;
+}
+
+.diff-table col.is-marker {
+  width: 1.75rem;
+}
+
+.diff-table td {
+  padding: 0 0.5rem;
+  vertical-align: top;
+}
+
+.diff-number {
+  text-align: end;
+  color: var(--ts-gray-500);
+  user-select: none;
+}
+
+.diff-number.is-right {
+  border-inline-start: 1px solid var(--ts-gray-300);
+}
+
+.diff-marker {
+  text-align: center;
+  color: var(--ts-gray-600);
+  user-select: none;
+}
+
+.diff-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.diff-table td.is-delete {
+  background: var(--diff-delete-bg);
+}
+
+.diff-table td.diff-number.is-delete {
+  background: var(--diff-delete-number-bg);
+}
+
+.diff-table td.is-insert {
+  background: var(--diff-insert-bg);
+}
+
+.diff-table td.diff-number.is-insert {
+  background: var(--diff-insert-number-bg);
+}
+
+.diff-table td.is-empty {
+  background: var(--diff-muted-bg);
+}
+
+.diff-table mark {
+  color: inherit;
+  border-radius: 2px;
+}
+
+.diff-table td.is-delete mark {
+  background: var(--diff-delete-mark-bg);
+}
+
+.diff-table td.is-insert mark {
+  background: var(--diff-insert-mark-bg);
+}
+
+.diff-skip {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--ts-gray-500);
+  background: var(--diff-muted-bg);
+}
+
 .app-footer {
   margin-top: 2rem;
   text-align: center;
@@ -139,5 +272,21 @@
 
   .options-actions {
     margin-inline-start: 0;
+  }
+
+  .diff-summary {
+    margin-inline-start: 0;
+  }
+
+  .diff-table {
+    font-size: 0.8125rem;
+  }
+
+  .diff-table col.is-number {
+    width: 2.75rem;
+  }
+
+  .diff-table td {
+    padding: 0 0.25rem;
   }
 }

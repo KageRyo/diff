@@ -11,6 +11,13 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocas-ui/5.7.0/tocas.min.css" integrity="sha512-F4xj0Qcc6/jwQjpN70mZP1F5edUVg/WbWEYqUu1FEnvZFAg5IxvBAlNgji+6547uhPtaO14HmBdMhsZ19fHVSw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "diff": "https://cdn.jsdelivr.net/npm/diff@9.0.0/libesm/index.js"
+      }
+    }
+  </script>
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
@@ -95,6 +102,21 @@
             </button>
           </div>
         </div>
+      </section>
+
+      <section class="ts-box diff-box">
+        <div class="ts-content is-dense diff-toolbar">
+          <div class="ts-buttons" role="group" data-i18n-aria-label="diff.view" aria-label="檢視方式">
+            <button class="ts-button is-small" type="button" data-view="split" aria-pressed="true" data-i18n="diff.split">並排</button>
+            <button class="ts-button is-small is-secondary" type="button" data-view="unified" aria-pressed="false" data-i18n="diff.unified">合併</button>
+          </div>
+          <label class="ts-checkbox"><input type="checkbox" data-setting="ignoreWhitespace"><span data-i18n="diff.ignoreWhitespace">忽略空白</span></label>
+          <label class="ts-checkbox"><input type="checkbox" data-setting="ignoreCase"><span data-i18n="diff.ignoreCase">忽略大小寫</span></label>
+          <label class="ts-checkbox"><input type="checkbox" data-setting="collapse"><span data-i18n="diff.collapse">只顯示變更（前後 3 行）</span></label>
+          <div class="diff-summary" id="diff-summary" aria-live="polite"></div>
+        </div>
+        <div class="ts-divider"></div>
+        <div class="diff-output" id="diff-output"></div>
       </section>
     </main>
 
