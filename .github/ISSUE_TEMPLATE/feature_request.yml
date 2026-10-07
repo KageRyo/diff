@@ -1,0 +1,23 @@
+name: Feature request / 功能建議
+description: Suggest an idea for Diff. 提出新功能或改善建議。
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve? / 想解決什麼問題？
+      description: Describe your use case. 說明你的使用情境。
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution / 建議的做法
+      description: Describe how you would like it to work. 說明你希望它如何運作。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives / 其他替代方案
+      description: Other approaches or tools you have considered. 你考慮過的其他做法或工具。
