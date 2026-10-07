@@ -8,7 +8,8 @@
     "start": "node scripts/serve.mjs",
     "test": "node --test",
     "test:browser": "node scripts/verify-browser.mjs",
-    "browser:install": "playwright install chromium"
+    "browser:install": "playwright install chromium",
+    "screenshot": "node scripts/screenshot.mjs"
   },
   "keywords": [
     "diff",
